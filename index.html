@@ -91,7 +91,8 @@ document.querySelector('#reset').onclick=()=>{if(confirm('Alle Angaben in diesem
 <script>
 const LIORA_AUTH_CONFIG = {
   url: "https://jvyasnkmkzxuocadtqaj.supabase.co",
-  publicKey: "sb_publishable_By4XPCfeGNX_BVQJr7mkUw_WbGbZvta"
+  publicKey: "sb_publishable_By4XPCfeGNX_BVQJr7mkUw_WbGbZvta",
+  email: "elynagoes@outlook.com"
 };
 </script>
 <style>
@@ -99,8 +100,8 @@ const LIORA_AUTH_CONFIG = {
 </style>
 <section class="auth-shell" id="loginGate" aria-label="Anmeldung">
 <div class="logo">LiORA<small>DIRECTOR & STUDIO</small></div>
-<div class="card"><div class="eyebrow">DEIN KUNDENZUGANG</div><h1>Willkommen bei LIORA.</h1><p>Melde dich mit den Zugangsdaten aus deinem Kursbereich an.</p>
-<form id="loginForm"><label for="loginEmail">E-Mail-Adresse</label><input id="loginEmail" name="email" type="email" autocomplete="username" required>
+<div class="card"><div class="eyebrow">DEIN KUNDENZUGANG</div><h1>Willkommen bei LIORA.</h1><p>Gib das Passwort aus deinem Kursbereich ein.</p>
+<form id="loginForm"><input id="loginEmail" name="email" type="hidden" value="elynagoes@outlook.com" autocomplete="username">
 <label for="loginPassword">Passwort</label><input id="loginPassword" name="password" type="password" autocomplete="current-password" required>
 <button class="btn primary" id="loginSubmit" type="submit" disabled>Anmelden</button></form>
 <div id="loginStatus" class="auth-error" role="status" aria-live="polite">Anmeldung wird vorbereitet …</div>
@@ -128,9 +129,9 @@ const LIORA_AUTH_CONFIG = {
  }
  $('loginForm').addEventListener('submit',async e=>{
    e.preventDefault();if(!client)return;const btn=$('loginSubmit');btn.disabled=true;message('Anmeldung läuft …');
-   try{const {error}=await client.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});
+   try{const {error}=await client.auth.signInWithPassword({email:LIORA_AUTH_CONFIG.email,password:$('loginPassword').value});
      $('loginPassword').value='';
-     if(error){lock();message(error.status===429?'Zu viele Anmeldeversuche. Bitte später erneut versuchen.':'Anmeldung fehlgeschlagen. Bitte E-Mail und Passwort prüfen.');return}
+     if(error){lock();message(error.status===429?'Zu viele Anmeldeversuche. Bitte später erneut versuchen.':'Anmeldung fehlgeschlagen. Bitte das Passwort prüfen.');return}
      await validate();
    }catch{lock();message('Keine Verbindung zur Anmeldung. Bitte erneut versuchen.')}finally{btn.disabled=false}
  });
