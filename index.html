@@ -96,7 +96,7 @@ function field(f){const [key,label,type,hint]=f;let el;if(Array.isArray(type)){e
 function render(){document.querySelector('#newContentBar').hidden=step!==0;if(step===6){const missing=missingRequired();if(missing){showMissing(missing);return}}document.querySelector('#nav').innerHTML=steps.map((s,i)=>`<button class="${i===step?'active':''}" data-step="${i}" ${i===step?'aria-current="step"':''}><span class="num">${i+1}</span>${s[0]}</button>`).join('')+'<p class="navnote">Fünf kurze Auswahlen reichen zum Start. Ausführliche Angaben sind optional.</p>';document.querySelector('#panel').innerHTML=`<div class="topline"><span>DEIN PERSÖNLICHER WEG</span><span>${step+1} / 7</span></div><div class="progress"><i style="width:${(step+1)/7*100}%"></i></div><div class="eyebrow">${step===6?'BEREIT FÜR CHATGPT':'SCHRITT '+(step+1)}</div><h2>${steps[step][1]}</h2><p class="sub">${steps[step][2]}</p>`+(step<6?`${step===0?'<details class="product-help"><summary>Du weisst nicht, was du in die Produktfelder schreiben sollst?</summary><p>Kopiere den kleinen Prompt in ChatGPT und füge einen Screenshot oder Text deines Produkts hinzu. Die drei Antworten kannst du anschliessend hier einfügen.</p><button class="btn secondary" id="copyProductHelp">Hilfsprompt kopieren</button><span class="status" role="status" id="helpStatus"></span><textarea id="helpPrompt" readonly aria-label="Hilfsprompt für Produktinformationen"></textarea></details>':''}${step===5&&wantsVisuals()?'<details class="product-help"><summary>Du kannst deinen Stil schwer beschreiben?</summary><p>Lass ChatGPT 5 Bilder deiner bisherigen Posts analysieren – am besten aus mehreren Beiträgen. Kopiere den Prompt, ergänze dort die Bilder und füge die Stilbeschreibung anschliessend bei „Farben, Schriften und Stilwünsche“ ein.</p><button class="btn secondary" id="copyStyleHelp" type="button">Stil-Prompt kopieren</button><span class="status" role="status" id="styleHelpStatus"></span><textarea id="styleHelpPrompt" readonly aria-label="Hilfsprompt zur Stilanalyse"></textarea></details>':''}<div id="fieldError" class="status" role="alert"></div>${fieldsMarkup()}${step===0&&centralProducts.has(data.offerType)?'<div class="notice">Die Produktfelder sind bereits ausgefüllt. Du kannst die Beschreibungen jederzeit anpassen.</div>':''}`:`<div class="summary"><span>${esc(data.goal||'Ziel noch offen')}</span><span>${esc(data.format||'Format wird empfohlen')}</span><span>${esc(data.mode||'Fertige Slides mit Text')}</span></div><div class="notice">1. Prompt kopieren und in ChatGPT einfügen.<br>2. Offene Fragen einzeln beantworten.<br>3. Falls gewünscht Avatar und Outfit hochladen, Richtung bestätigen und Content erstellen lassen.<br>Die App selbst erzeugt keine KI-Antworten oder Bilder. Es gelten die Möglichkeiten und Limits deines ChatGPT-Kontos.</div><div class="tools"><button class="btn primary" id="copy">Masterprompt kopieren</button><button class="btn" id="download">Als TXT herunterladen</button><a class="btn" href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT öffnen ↗</a></div><div role="status" class="status" id="status"></div><label for="result">Deine vollständige Anweisung</label><textarea class="output" id="result" readonly></textarea><div class="new-content-end"><button type="button" class="new-content-btn" id="newContentEnd">＋ Neuen Content starten</button></div>`)+`<div class="actions"><button class="btn" id="back" ${step===0?'disabled':''}>← Zurück</button>${step<6?`<button class="btn primary" id="next">${step===5?'Masterprompt erstellen':'Weiter'} →</button>`:'<button class="btn secondary" id="edit">Angaben bearbeiten</button>'}</div>`;
 if(step===5&&wantsVisuals()){document.querySelector('#styleHelpPrompt').value=styleHelpPrompt;document.querySelector('#copyStyleHelp').onclick=async()=>{try{await navigator.clipboard.writeText(styleHelpPrompt);document.querySelector('#styleHelpStatus').textContent=' Kopiert – in ChatGPT einfügen und 5 Bilder ergänzen.'}catch{document.querySelector('#styleHelpPrompt').select();document.querySelector('#styleHelpStatus').textContent=' Text markiert. Mit Strg/Cmd + C kopieren.'}};}
 if(step===0){document.querySelector('#helpPrompt').value=productHelpPrompt;document.querySelector('#copyProductHelp').onclick=async()=>{try{await navigator.clipboard.writeText(productHelpPrompt);document.querySelector('#helpStatus').textContent=' Kopiert – in ChatGPT einfügen und Produktinfos ergänzen.'}catch{document.querySelector('#helpPrompt').select();document.querySelector('#helpStatus').textContent=' Text markiert. Mit Strg/Cmd + C kopieren.'}};}
-document.querySelectorAll('[data-step]').forEach(b=>b.onclick=()=>{step=+b.dataset.step;render()});document.querySelectorAll('[data-key]').forEach(el=>el.oninput=()=>{const key=el.dataset.key;const previous=data[key];data[key]=el.value;if(['offerType','mode','format','avatar','production'].includes(key)){if(key==='offerType'&&previous!==el.value&&(centralProducts.has(previous)||centralProducts.has(el.value))){for(const k of ['offer','benefit','facts'])delete data[k];showProductPreview()}save();render()}else save()});document.querySelector('#back').onclick=()=>{step--;render()};if(step<6)document.querySelector('#next').onclick=()=>{const missing=missingRequired(step);if(missing){showMissing(missing);return}step++;render();window.scrollTo({top:180,behavior:'smooth'})};else{loadDirectorPrompt();document.querySelector('#edit').onclick=()=>{step=0;render()};document.querySelector('#copy').onclick=async()=>{try{await navigator.clipboard.writeText(document.querySelector('#result').value);document.querySelector('#status').textContent='Kopiert. Jetzt in ChatGPT einfügen.'}catch{document.querySelector('#result').select();document.querySelector('#status').textContent='Bitte den markierten Text mit Strg/Cmd + C kopieren.'}};document.querySelector('#newContentEnd').onclick=startNewContent;document.querySelector('#download').onclick=()=>{const u=URL.createObjectURL(new Blob([document.querySelector('#result').value],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=u;a.download='LIORA_Persoenlicher_Masterprompt.txt';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}}}
+document.querySelectorAll('[data-step]').forEach(b=>b.onclick=()=>{step=+b.dataset.step;render()});document.querySelectorAll('[data-key]').forEach(el=>el.oninput=()=>{const key=el.dataset.key;const previous=data[key];data[key]=el.value;if(['offerType','mode','format','avatar','production'].includes(key)){if(key==='offerType'&&previous!==el.value&&(centralProducts.has(previous)||centralProducts.has(el.value))){for(const k of ['offer','benefit','facts'])delete data[k];showProductPreview()}save();render()}else save()});document.querySelector('#back').onclick=()=>{step--;render()};if(step<6)document.querySelector('#next').onclick=()=>{const missing=missingRequired(step);if(missing){showMissing(missing);return}step++;render()};else{loadDirectorPrompt();document.querySelector('#edit').onclick=()=>{step=0;render()};document.querySelector('#copy').onclick=async()=>{try{await navigator.clipboard.writeText(document.querySelector('#result').value);document.querySelector('#status').textContent='Kopiert. Jetzt in ChatGPT einfügen.'}catch{document.querySelector('#result').select();document.querySelector('#status').textContent='Bitte den markierten Text mit Strg/Cmd + C kopieren.'}};document.querySelector('#newContentEnd').onclick=startNewContent;document.querySelector('#download').onclick=()=>{const u=URL.createObjectURL(new Blob([document.querySelector('#result').value],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=u;a.download='LIORA_Persoenlicher_Masterprompt.txt';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}}}
 // Wissensmodule, Formatregeln und Masterprompt werden ausschliesslich auf Supabase zusammengestellt.
 const LIORA_PROMPT_FUNCTION='generate-director-prompt';
 let promptRequestId=0;
@@ -115,8 +115,8 @@ async function loadDirectorPrompt(){
   const cleanData=promptProductData();
   const profile=schemas.flat().filter(visibleField).map(f=>`${f[1]}: ${cleanData[f[0]]||'Noch offen'}`).join('\n');
   const response=await fetch(`${LIORA_AUTH_CONFIG.url}/functions/v1/${LIORA_PROMPT_FUNCTION}`,{
-   method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`,'apikey':LIORA_AUTH_CONFIG.publicKey},
-   body:JSON.stringify({data:cleanData,profile})
+   method:'POST',headers:{'Content-Type':'application/json','apikey':LIORA_AUTH_CONFIG.publicKey},
+   body:JSON.stringify({action:'generate',token,data:cleanData,profile})
   });
   const result=await response.json().catch(()=>({}));
   if(!response.ok||!result.success||typeof result.prompt!=='string')throw Error(result.error||`Masterprompt konnte nicht erstellt werden (HTTP ${response.status}).`);
@@ -203,75 +203,73 @@ document.querySelector('#reset').onclick=()=>{if(confirm('Alle Angaben in diesem
  document.addEventListener('visibilitychange',()=>{if(document.hidden)stopCurrent()});
 })();
 </script>
-<!-- Nur öffentliche Projektdaten eintragen. Niemals secret-/service_role-Key oder Passwort! -->
+<!-- LIORA Director & Studio: Mitgliederlogin und Adminverwaltung -->
 <script>
-const LIORA_AUTH_CONFIG = {
-  url: "https://jvyasnkmkzxuocadtqaj.supabase.co",
-  publicKey: "sb_publishable_By4XPCfeGNX_BVQJr7mkUw_WbGbZvta",
-  email: "elynagoes@outlook.com"
-};
+const LIORA_AUTH_CONFIG={url:'https://jvyasnkmkzxuocadtqaj.supabase.co',publicKey:'sb_publishable_By4XPCfeGNX_BVQJr7mkUw_WbGbZvta'};
 </script>
 <style>
-[hidden]{display:none!important}.auth-shell{max-width:460px;margin:9vh auto;padding:28px}.auth-shell .card{padding:32px}.auth-shell h1{font-size:30px;letter-spacing:-1px}.auth-shell input{margin-bottom:18px}.auth-shell .btn{width:100%}.auth-error{font-size:13px;color:#9d314f;line-height:1.6;min-height:24px;margin-top:15px}.auth-note{font-size:12px}.auth-top{position:fixed;right:18px;bottom:18px;z-index:5;box-shadow:0 3px 20px #291a2415}.auth-shell .remember-label{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:400;margin:3px 0 14px}.auth-shell .remember-label input{width:17px;height:17px;margin:0}.auth-shell .logo{margin-bottom:30px}
+[hidden]{display:none!important}.auth-shell{max-width:510px;margin:7vh auto;padding:25px}.auth-shell .card{padding:32px}.auth-shell h1{font-size:29px}.auth-shell .logo{margin-bottom:25px}.auth-shell input{margin:0 0 16px}.auth-shell .btn{width:100%}.auth-note{font-size:12px}.auth-error{color:#a2324d;font-size:13px;line-height:1.6;min-height:20px;margin-top:12px}.auth-error[data-state="info"]{color:#4c705d}#loginPassword[aria-invalid="true"]{border-color:#b73552;box-shadow:0 0 0 3px #b7355218}.remember-label{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:400;margin:0 0 16px}.remember-label input{width:17px;height:17px;margin:0}.auth-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:16px}.auth-actions .btn{width:auto}.auth-top{position:fixed;right:18px;bottom:18px;z-index:5;box-shadow:0 3px 20px #291a2415}.admin-shell{max-width:920px;margin:40px auto;padding:0 20px}.admin-shell .card{margin-bottom:18px}.admin-shell .admin-header{display:flex;justify-content:space-between;align-items:center;gap:14px}.admin-shell .admin-header .btn{width:auto}.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.admin-grid .card{margin:0}.admin-shell input{margin-bottom:12px}.admin-shell .btn{width:auto}.admin-status{font-size:13px;color:#745487;min-height:20px;margin:12px 0}.member-list{max-height:470px;overflow:auto;border-top:1px solid #e6e0ea;margin-top:15px}.member-row{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #eee8f3;padding:12px 0}.member-email{overflow-wrap:anywhere;font-size:13px}.member-state{font-size:11px;color:#4d8161;margin-top:3px}.member-inactive .member-state{color:#a2324d}.member-actions{display:flex;gap:6px;flex-wrap:wrap}.member-actions .btn{font-size:11px;padding:7px 9px}.admin-shell .search{margin:12px 0}.auth-link{background:none;border:0;color:#7251a1;text-decoration:underline;font-size:12px;padding:6px 0}@media(max-width:700px){.admin-grid{grid-template-columns:1fr}.member-row{align-items:flex-start;flex-direction:column}.auth-shell{margin:3vh auto}.admin-shell .card{padding:22px}}
 </style>
-<section class="auth-shell" id="loginGate" aria-label="Anmeldung">
-<div class="logo">LiORA<small>DIRECTOR & STUDIO</small></div>
-<div class="card"><div class="eyebrow">DEIN KUNDENZUGANG</div><h1>Willkommen bei LIORA.</h1><p>Gib das Passwort aus deinem Kursbereich ein.</p>
-<form id="loginForm"><input id="loginEmail" name="email" type="hidden" value="elynagoes@outlook.com" autocomplete="username">
-<label for="loginPassword">Passwort</label><input id="loginPassword" name="password" type="password" autocomplete="current-password" required>
-<label class="remember-label"><input id="rememberLogin" type="checkbox"> Angemeldet bleiben</label><button class="btn primary" id="loginSubmit" type="submit" disabled>Anmelden</button></form>
-<div id="loginStatus" class="auth-error" role="status" aria-live="polite">Anmeldung wird vorbereitet …</div>
-<p class="auth-note">Du hast noch keine Zugangsdaten? Wende dich an die Anbieterin. Deine Content-Angaben bleiben in diesem Browser.</p></div>
+<section id="loginGate" class="auth-shell" aria-label="Kundenanmeldung">
+ <div class="logo">LiORA<small>DIRECTOR & STUDIO</small></div>
+ <div class="card"><div class="eyebrow">DEIN KUNDENZUGANG</div><h1>Willkommen bei LIORA.</h1>
+ <p>Melde dich mit deiner freigeschalteten E-Mail-Adresse und dem gemeinsamen Kundenpasswort an.</p>
+ <form id="loginForm"><label for="loginEmail">E-Mail-Adresse</label><input id="loginEmail" type="email" autocomplete="username" required placeholder="deine@email.ch">
+ <label for="loginPassword">Kundenpasswort</label><input id="loginPassword" type="password" autocomplete="current-password" required>
+ <label class="remember-label"><input id="rememberLogin" type="checkbox" checked> Angemeldet bleiben</label>
+ <button class="btn primary" id="loginSubmit" type="submit">Anmelden</button></form>
+ <div class="auth-error" id="loginStatus" role="status" aria-live="polite"></div>
+ <p class="auth-note">Das aktuelle Kundenpasswort findest du in deinem Mitgliederbereich.</p>
+ <button class="auth-link" id="openAdminLogin" type="button">Admin-Zugang</button></div>
 </section>
-<button class="btn auth-top" id="logoutButton" hidden>Abmelden</button>
+<button class="btn auth-top" id="logoutButton" hidden type="button">Abmelden</button>
+<section id="adminScreen" class="admin-shell" hidden aria-label="Adminbereich">
+ <div class="admin-header"><div class="logo">LiORA<small>ADMIN · DIRECTOR & STUDIO</small></div><button class="btn" id="adminBack" type="button">Zur Kundenanmeldung</button></div>
+ <div class="card" id="adminLoginArea"><div class="eyebrow">GESCHÜTZTER ADMINBEREICH</div><h2>Admin anmelden</h2><form id="adminLoginForm"><label for="adminPassword">Admin-Passwort</label><input id="adminPassword" type="password" autocomplete="off" required><button class="btn primary" id="adminLoginSubmit" type="submit">Admin anmelden</button></form></div>
+ <div id="adminDashboard" hidden>
+  <div class="card"><div class="admin-header"><div><div class="eyebrow">MITGLIEDERVERWALTUNG</div><h2>Deine LIORA-Mitglieder</h2><p id="memberCount"></p></div><button class="btn" id="adminLogout" type="button">Admin abmelden</button></div>
+   <div id="adminStatus" class="admin-status" role="status" aria-live="polite"></div>
+   <label for="memberSearch">Mitglieder suchen</label><input class="search" id="memberSearch" type="search" placeholder="E-Mail-Adresse suchen …">
+   <button class="btn secondary" id="refreshMembers" type="button">Liste aktualisieren</button><div class="member-list" id="membersList"></div></div>
+  <div class="admin-grid"><div class="card"><h2>Mitglied hinzufügen</h2><form id="addMemberForm"><label for="memberEmail">E-Mail-Adresse</label><input id="memberEmail" type="email" required placeholder="mitglied@email.ch"><button class="btn primary" type="submit">Freischalten</button></form></div>
+   <div class="card"><h2>Kundenpasswort ändern</h2><p class="auth-note">Alle bestehenden Kundenanmeldungen werden danach ungültig. Teile das neue Passwort im Mitgliederbereich mit.</p><form id="passwordChangeForm"><label for="newCustomerPassword">Neues Kundenpasswort (mind. 12 Zeichen)</label><input id="newCustomerPassword" type="password" minlength="12" required autocomplete="new-password"><label for="confirmCustomerPassword">Passwort bestätigen</label><input id="confirmCustomerPassword" type="password" minlength="12" required autocomplete="new-password"><button class="btn primary" type="submit">Kundenpasswort ändern</button></form></div></div>
+ </div>
+</section>
 <script>
 (()=>{
- const $=id=>document.getElementById(id);let client=null,validation=0;
-  window.lioraGetAccessToken=async()=>{if(!client)return null;const {data,error}=await client.auth.getSession();if(error||!data.session)return null;return data.session.access_token;};
- const message=t=>{$('loginStatus').textContent=t};
- const authKey='liora-customer-auth-v1';let remember=true;
- try{remember=localStorage.getItem('liora-remember-login')!=='false'}catch{}
- $('rememberLogin').checked=remember;
- const authStorage={getItem(k){try{return localStorage.getItem(k)||sessionStorage.getItem(k)}catch{return null}},setItem(k,v){try{const chosen=remember?localStorage:sessionStorage,other=remember?sessionStorage:localStorage;chosen.setItem(k,v);other.removeItem(k)}catch{}},removeItem(k){try{localStorage.removeItem(k);sessionStorage.removeItem(k)}catch{}}};
- $('rememberLogin').addEventListener('change',()=>{const existing=authStorage.getItem(authKey);remember=$('rememberLogin').checked;try{localStorage.setItem('liora-remember-login',String(remember))}catch{}if(existing)authStorage.setItem(authKey,existing)});
- function lock(){validation++;$('lioraApp').hidden=true;$('logoutButton').hidden=true;$('loginGate').hidden=false}
- async function validate(){
-   const check=++validation;
-   try{const {data,error}=await client.auth.getUser();if(check!==validation)return;
-     if(error||!data.user){lock();message('Bitte melde dich an.');return}
-     $('loginGate').hidden=true;$('lioraApp').hidden=false;$('logoutButton').hidden=false;message('');
-   }catch{if(check===validation){lock();message('Die Anmeldung konnte nicht geprüft werden. Bitte erneut versuchen.')}}
- }
- function validConfig(){
-   try{const u=new URL(LIORA_AUTH_CONFIG.url);if(u.protocol!=='https:'||LIORA_AUTH_CONFIG.publicKey.includes('_HIER'))return false;
-     const k=LIORA_AUTH_CONFIG.publicKey;if(k.startsWith('sb_secret_'))return false;
-     if(k.startsWith('eyJ')){try{const payload=JSON.parse(atob(k.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));if(payload.role!=='anon')return false}catch{return false}}
-     return k.startsWith('sb_publishable_')||k.startsWith('eyJ');
-   }catch{return false}
- }
- $('loginForm').addEventListener('submit',async e=>{
-   e.preventDefault();if(!client)return;const btn=$('loginSubmit');btn.disabled=true;message('Anmeldung läuft …');
-   try{const {error}=await client.auth.signInWithPassword({email:LIORA_AUTH_CONFIG.email,password:$('loginPassword').value});
-     $('loginPassword').value='';
-     if(error){lock();message(error.status===429?'Zu viele Anmeldeversuche. Bitte später erneut versuchen.':'Anmeldung fehlgeschlagen. Bitte das Passwort prüfen.');return}
-     await validate();
-   }catch{lock();message('Keine Verbindung zur Anmeldung. Bitte erneut versuchen.')}finally{btn.disabled=false}
- });
- $('logoutButton').addEventListener('click',async()=>{
-   lock();message('Abmeldung läuft …');
-   try{const {error}=await client.auth.signOut({scope:'local'});message(error?'Abmeldung nicht vollständig bestätigt. Bitte die Seite schliessen und später erneut versuchen.':'Du bist abgemeldet.')}catch{message('Abmeldung nicht bestätigt. Bitte die Seite schliessen.');}
- });
- if(!validConfig()){message('Die Anmeldung ist momentan nicht verfügbar. Bitte wende dich an die Anbieterin.');return}
- const script=document.createElement('script');script.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
- script.onerror=()=>message('Die Anmeldung konnte nicht geladen werden. Bitte Verbindung prüfen und neu laden.');
- script.onload=async()=>{
-   try{client=window.supabase.createClient(LIORA_AUTH_CONFIG.url,LIORA_AUTH_CONFIG.publicKey,{auth:{storageKey:authKey,storage:authStorage,persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
-     client.auth.onAuthStateChange((event,session)=>{if(!session){lock();if(event==='SIGNED_OUT')message('Du bist abgemeldet.')}else{queueMicrotask(()=>validate())}});
-     $('loginSubmit').disabled=false;
-     const {data,error}=await client.auth.getSession();if(error){lock();message('Sitzung konnte nicht geladen werden. Bitte anmelden.')}else if(data.session){await validate()}else message('');
-     window.addEventListener('focus',()=>{if(!$('lioraApp').hidden)validate()});
-   }catch{lock();message('Anmeldung konnte nicht eingerichtet werden. Bitte die Anbieterin kontaktieren.')}
- };document.head.appendChild(script);
+ const $=id=>document.getElementById(id);
+ const endpoint=LIORA_AUTH_CONFIG.url+'/functions/v1/generate-director-prompt';
+ const customerKey='liora-director-customer-session-v2',adminKey='liora-director-admin-session-v2';
+ const loginHelp='Anmeldung nicht möglich. Bitte überprüfe deine E-Mail-Adresse und dein Kundenpasswort. Falls das Passwort inzwischen geändert wurde, findest du das aktuelle Passwort im Mitgliederbereich.';
+ const expiredHelp='Deine Anmeldung ist nicht mehr gültig. Möglicherweise wurde das Kundenpasswort geändert. Das aktuelle Passwort findest du im Mitgliederbereich. Bitte melde dich erneut an.';
+ let customerToken=null,adminToken=null,members=[],epoch=0;
+ const store=(storage,key,value)=>{try{storage.setItem(key,value)}catch{}};
+ const remove=(key)=>{for(const storage of [localStorage,sessionStorage])try{storage.removeItem(key)}catch{}};
+ const message=(text,kind='error')=>{$('loginStatus').textContent=text;$('loginStatus').dataset.state=kind};
+ function lock(text=''){epoch++;customerToken=null;remove(customerKey);$('lioraApp').hidden=true;$('logoutButton').hidden=true;$('loginGate').hidden=false;$('adminScreen').hidden=true;message(text,text==='Du bist abgemeldet.'?'info':'error');}
+ function showApp(token,email,remember){customerToken=token;remove(customerKey);store(remember?localStorage:sessionStorage,customerKey,JSON.stringify({token,email}));$('loginGate').hidden=true;$('adminScreen').hidden=true;$('lioraApp').hidden=false;$('logoutButton').hidden=false;$('loginPassword').removeAttribute('aria-invalid');message('','info');}
+ async function request(action,body={},token=null){const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json',apikey:LIORA_AUTH_CONFIG.publicKey},body:JSON.stringify({action,...body,...(token?{token}:{})}),signal:AbortSignal.timeout(30000)});const data=await res.json().catch(()=>({}));if(!res.ok||data.success!==true){const err=new Error(data.error||'Anfrage fehlgeschlagen');err.status=res.status;throw err;}return data;}
+ window.lioraDirectorRequest=request;
+ window.lioraGetAccessToken=async()=>customerToken;
+ window.lioraDirectorSessionExpired=()=>lock(expiredHelp);
+ $('loginForm').addEventListener('submit',async e=>{e.preventDefault();const btn=$('loginSubmit');btn.disabled=true;$('loginPassword').removeAttribute('aria-invalid');message('Dein Zugang wird geprüft …','info');try{const data=await request('login-customer',{email:$('loginEmail').value.trim().toLowerCase(),password:$('loginPassword').value});$('loginPassword').value='';showApp(data.token,data.email,$('rememberLogin').checked);}catch(err){if(err.status===401||err.status===403){$('loginPassword').setAttribute('aria-invalid','true');message(loginHelp)}else message('Die Anmeldung konnte gerade nicht geprüft werden. Bitte versuche es später erneut.')}finally{btn.disabled=false;}});
+ $('logoutButton').addEventListener('click',()=>{lock('Du bist abgemeldet.');$('loginPassword').value='';});
+ async function restore(){let saved=null,remember=true;for(const [storage,keep] of [[localStorage,true],[sessionStorage,false]]){try{const raw=storage.getItem(customerKey);if(raw){saved=JSON.parse(raw);remember=keep;break;}}catch{}}if(!saved?.token)return;const run=++epoch;message('Dein Zugang wird überprüft …','info');try{const data=await request('check-access',{},saved.token);if(run!==epoch)return;if(data.role!=='customer')throw Error('Kein Kundenzugang');showApp(saved.token,data.email,remember);}catch(err){if(run!==epoch)return;if(err.status===401||err.status===403)lock(expiredHelp);else message('Die Zugangsprüfung ist momentan nicht erreichbar. Bitte versuche es erneut.');}}
+ $('openAdminLogin').onclick=()=>{$('loginGate').hidden=true;$('adminScreen').hidden=false;$('adminLoginArea').hidden=false;$('adminDashboard').hidden=true;$('adminStatus').textContent='';};
+ $('adminBack').onclick=()=>{$('adminScreen').hidden=true;$('loginGate').hidden=false;};
+ function adminLogout(){adminToken=null;remove(adminKey);$('adminDashboard').hidden=true;$('adminLoginArea').hidden=false;$('adminPassword').value='';$('adminStatus').textContent='Admin abgemeldet.';}
+ $('adminLogout').onclick=adminLogout;
+ async function adminCall(action,body={}){if(!adminToken)throw Error('Bitte als Admin anmelden.');try{return await request(action,body,adminToken)}catch(err){if(err.status===401||err.status===403)adminLogout();throw err;}}
+ $('adminLoginForm').addEventListener('submit',async e=>{e.preventDefault();const btn=$('adminLoginSubmit');btn.disabled=true;$('adminStatus').textContent='Admin-Zugang wird geprüft …';try{const data=await request('login-admin',{password:$('adminPassword').value});adminToken=data.token;$('adminPassword').value='';store(sessionStorage,adminKey,adminToken);$('adminLoginArea').hidden=true;$('adminDashboard').hidden=false;await loadMembers();$('adminStatus').textContent='Admin angemeldet.';}catch(err){$('adminStatus').textContent=err.message||'Admin-Anmeldung fehlgeschlagen.';}finally{btn.disabled=false;}});
+ async function loadMembers(){const data=await adminCall('list-members');members=Array.isArray(data.members)?data.members:[];renderMembers();}
+ function renderMembers(){const query=$('memberSearch').value.trim().toLowerCase();const filtered=members.filter(m=>m.email.toLowerCase().includes(query));$('memberCount').textContent=members.filter(m=>m.active).length+' aktive Mitglieder / '+members.length+' insgesamt';const container=$('membersList');container.replaceChildren();if(!filtered.length){container.textContent='Keine passenden Mitglieder.';return;}for(const m of filtered){const row=document.createElement('div');row.className='member-row'+(m.active?'':' member-inactive');const info=document.createElement('div');info.className='member-email';info.textContent=m.email;const state=document.createElement('div');state.className='member-state';state.textContent=m.active?'Aktiv':'Gesperrt';info.append(document.createElement('br'),state);const actions=document.createElement('div');actions.className='member-actions';const toggle=document.createElement('button');toggle.type='button';toggle.className='btn secondary';toggle.textContent=m.active?'Sperren':'Aktivieren';toggle.onclick=async()=>{toggle.disabled=true;try{await adminCall('set-member-active',{email:m.email,active:!m.active});await loadMembers();$('adminStatus').textContent='Mitglied aktualisiert.';}catch(err){$('adminStatus').textContent=err.message;}finally{toggle.disabled=false;}};const del=document.createElement('button');del.type='button';del.className='btn';del.textContent='Löschen';del.onclick=async()=>{if(!confirm('Mitglied '+m.email+' endgültig löschen?'))return;del.disabled=true;try{await adminCall('delete-member',{email:m.email});await loadMembers();$('adminStatus').textContent='Mitglied gelöscht.';}catch(err){$('adminStatus').textContent=err.message;}finally{del.disabled=false;}};actions.append(toggle,del);row.append(info,actions);container.append(row);}}
+ $('memberSearch').oninput=renderMembers;
+ $('refreshMembers').onclick=async()=>{try{await loadMembers();$('adminStatus').textContent='Mitgliederliste aktualisiert.';}catch(err){$('adminStatus').textContent=err.message;}};
+ $('addMemberForm').onsubmit=async e=>{e.preventDefault();const email=$('memberEmail').value.trim().toLowerCase();try{await adminCall('add-member',{email});$('memberEmail').value='';await loadMembers();$('adminStatus').textContent=email+' ist freigeschaltet.';}catch(err){$('adminStatus').textContent=err.message;}};
+ $('passwordChangeForm').onsubmit=async e=>{e.preventDefault();const a=$('newCustomerPassword').value,b=$('confirmCustomerPassword').value;if(a!==b){$('adminStatus').textContent='Die beiden Passwörter stimmen nicht überein.';return;}if(!confirm('Kundenpasswort wirklich ändern? Alle Kundensitzungen werden ungültig.'))return;try{await adminCall('change-customer-password',{newPassword:a});$('newCustomerPassword').value='';$('confirmCustomerPassword').value='';$('adminStatus').textContent='Kundenpasswort geändert. Alle Mitglieder müssen sich erneut anmelden.';}catch(err){$('adminStatus').textContent=err.message;}};
+ (async()=>{await restore();try{const t=sessionStorage.getItem(adminKey);if(t){const d=await request('check-access',{},t);if(d.role==='admin'){adminToken=t;$('adminLoginArea').hidden=true;$('adminDashboard').hidden=false;await loadMembers();}}}catch{remove(adminKey);}})();
+ window.addEventListener('focus',async()=>{if(!customerToken||$('lioraApp').hidden)return;const t=customerToken;try{await request('check-access',{},t);}catch(err){if((err.status===401||err.status===403)&&customerToken===t)lock(expiredHelp);}});
+ window.addEventListener('storage',e=>{if(e.key===customerKey&&e.newValue===null&&customerToken)lock('Du wurdest abgemeldet.');});
 })();
 </script>
 <footer class="legal-footer" aria-label="Rechtliche Informationen"><a href="https://nyraimpressum.netlify.app" target="_blank" rel="noopener noreferrer">Impressum</a><span aria-hidden="true">·</span><a href="https://nyradatenschutz.netlify.app" target="_blank" rel="noopener noreferrer">Datenschutz</a></footer></html>
