@@ -165,6 +165,21 @@ function kineticPromptRules(){
 }
 const LIORA_PROMPT_FUNCTION='generate-director-prompt';
 let promptRequestId=0;
+const pendingDirectorPrompts=new Map();
+function requestDirectorPrompt(body){
+ if(pendingDirectorPrompts.has(body))return pendingDirectorPrompts.get(body);
+ const pending=(async()=>{
+  const response=await fetch(`${LIORA_AUTH_CONFIG.url}/functions/v1/${LIORA_PROMPT_FUNCTION}`,{
+   method:'POST',headers:{'Content-Type':'application/json','apikey':LIORA_AUTH_CONFIG.publicKey},
+   body,signal:AbortSignal.timeout(30000)
+  });
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok||!result.success||typeof result.prompt!=='string')throw Error(result.error||`Masterprompt konnte nicht erstellt werden (HTTP ${response.status}).`);
+  return result.prompt.trimEnd();
+ })().finally(()=>pendingDirectorPrompts.delete(body));
+ pendingDirectorPrompts.set(body,pending);
+ return pending;
+}
 async function loadDirectorPrompt(){
  const requestId=++promptRequestId;
  const output=document.getElementById('result');
@@ -179,14 +194,10 @@ async function loadDirectorPrompt(){
   if(!token)throw Error('Bitte melde dich erneut an.');
   const cleanData=promptProductData();
   const profile=schemas.flat().filter(visibleField).map(f=>`${f[1]}: ${cleanData[f[0]]||'Noch offen'}`).join('\n');
-  const response=await fetch(`${LIORA_AUTH_CONFIG.url}/functions/v1/${LIORA_PROMPT_FUNCTION}`,{
-   method:'POST',headers:{'Content-Type':'application/json','apikey':LIORA_AUTH_CONFIG.publicKey},
-   body:JSON.stringify({action:'generate',token,data:cleanData,profile})
-  });
-  const result=await response.json().catch(()=>({}));
-  if(!response.ok||!result.success||typeof result.prompt!=='string')throw Error(result.error||`Masterprompt konnte nicht erstellt werden (HTTP ${response.status}).`);
+  const body=JSON.stringify({action:'generate',token,data:cleanData,profile});
+  const prompt=await requestDirectorPrompt(body);
   if(requestId!==promptRequestId||document.getElementById('result')!==output)return;
-  output.value=[result.prompt.trimEnd(),storyPromptRules(),carouselCaptionRules,kineticPromptRules()].join('\n\n');
+  output.value=[prompt,storyPromptRules(),carouselCaptionRules,kineticPromptRules()].join('\n\n');
   status.textContent='Dein vollständiger Masterprompt ist bereit.';
   for(const id of ['copy','download']){const b=document.getElementById(id);if(b)b.disabled=false;}
  }catch(error){
@@ -312,7 +323,8 @@ const LIORA_AUTH_CONFIG={url:'https://jvyasnkmkzxuocadtqaj.supabase.co',publicKe
  const remove=(key)=>{for(const storage of [localStorage,sessionStorage])try{storage.removeItem(key)}catch{}};
  const message=(text,kind='error')=>{$('loginStatus').textContent=text;$('loginStatus').dataset.state=kind};
  function lock(text=''){epoch++;customerToken=null;remove(customerKey);$('lioraApp').hidden=true;$('logoutButton').hidden=true;$('loginGate').hidden=false;$('adminScreen').hidden=true;message(text,text==='Du bist abgemeldet.'?'info':'error');}
- function showApp(token,email,remember){customerToken=token;remove(customerKey);store(remember?localStorage:sessionStorage,customerKey,JSON.stringify({token,email}));$('loginGate').hidden=true;$('adminScreen').hidden=true;$('lioraApp').hidden=false;$('logoutButton').hidden=false;$('loginPassword').removeAttribute('aria-invalid');message('','info');}
+ let focusAccess={lastCheck:0,pending:false};
+ function showApp(token,email,remember){customerToken=token;focusAccess={lastCheck:Date.now(),pending:false};remove(customerKey);store(remember?localStorage:sessionStorage,customerKey,JSON.stringify({token,email}));$('loginGate').hidden=true;$('adminScreen').hidden=true;$('lioraApp').hidden=false;$('logoutButton').hidden=false;$('loginPassword').removeAttribute('aria-invalid');message('','info');}
  async function request(action,body={},token=null){const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json',apikey:LIORA_AUTH_CONFIG.publicKey},body:JSON.stringify({action,...body,...(token?{token}:{})}),signal:AbortSignal.timeout(30000)});const data=await res.json().catch(()=>({}));if(!res.ok||data.success!==true){const err=new Error(data.error||'Anfrage fehlgeschlagen');err.status=res.status;throw err;}return data;}
  window.lioraDirectorRequest=request;
  window.lioraGetAccessToken=async()=>customerToken;
@@ -333,7 +345,18 @@ const LIORA_AUTH_CONFIG={url:'https://jvyasnkmkzxuocadtqaj.supabase.co',publicKe
  $('addMemberForm').onsubmit=async e=>{e.preventDefault();const email=$('memberEmail').value.trim().toLowerCase();try{await adminCall('add-member',{email});$('memberEmail').value='';await loadMembers();$('adminStatus').textContent=email+' ist freigeschaltet.';}catch(err){$('adminStatus').textContent=err.message;}};
  $('passwordChangeForm').onsubmit=async e=>{e.preventDefault();const a=$('newCustomerPassword').value,b=$('confirmCustomerPassword').value;if(a!==b){$('adminStatus').textContent='Die beiden Passwörter stimmen nicht überein.';return;}if(!confirm('Kundenpasswort wirklich ändern? Alle Kundensitzungen werden ungültig.'))return;try{await adminCall('change-customer-password',{newPassword:a});$('newCustomerPassword').value='';$('confirmCustomerPassword').value='';$('adminStatus').textContent='Kundenpasswort geändert. Alle Mitglieder müssen sich erneut anmelden.';}catch(err){$('adminStatus').textContent=err.message;}};
  (async()=>{await restore();try{const t=sessionStorage.getItem(adminKey);if(t){const d=await request('check-access',{},t);if(d.role==='admin'){adminToken=t;$('adminLoginArea').hidden=true;$('adminDashboard').hidden=false;await loadMembers();}}}catch{remove(adminKey);}})();
- window.addEventListener('focus',async()=>{if(!customerToken||$('lioraApp').hidden)return;const t=customerToken;try{await request('check-access',{},t);}catch(err){if((err.status===401||err.status===403)&&customerToken===t)lock(expiredHelp);}});
+ window.addEventListener('focus',async()=>{
+  if(!customerToken||$('lioraApp').hidden)return;
+  const access=focusAccess;
+  const now=Date.now();
+  if(access.pending||now-access.lastCheck<60000)return;
+  const token=customerToken;
+  access.lastCheck=now;
+  access.pending=true;
+  try{await request('check-access',{},token);}
+  catch(err){if((err.status===401||err.status===403)&&focusAccess===access&&customerToken===token)lock(expiredHelp);}
+  finally{access.pending=false;}
+ });
  window.addEventListener('storage',e=>{if(e.key===customerKey&&e.newValue===null&&customerToken)lock('Du wurdest abgemeldet.');});
 })();
 </script>
