@@ -217,7 +217,7 @@ document.querySelector('#reset').onclick=()=>{if(confirm('Alle Angaben in diesem
  function decorate(){
   const panel=document.getElementById('panel');if(!panel)return;
   if(active&&!document.contains(active.field))stopCurrent();
-  panel.querySelectorAll('.field textarea, .field input:not([type="hidden"]):not([type="password"])').forEach(field=>{
+  panel.querySelectorAll('.field textarea, .field input:not([type]), .field input[type="text"]').forEach(field=>{
    if(field.id==='name'||field.id==='productKind')return;
    if(field.dataset.voiceReady)return;
    field.dataset.voiceReady='1';
