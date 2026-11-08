@@ -98,6 +98,12 @@ if(step===5&&wantsVisuals()){document.querySelector('#styleHelpPrompt').value=st
 if(step===0){document.querySelector('#helpPrompt').value=productHelpPrompt;document.querySelector('#copyProductHelp').onclick=async()=>{try{await navigator.clipboard.writeText(productHelpPrompt);document.querySelector('#helpStatus').textContent=' Kopiert – in ChatGPT einfügen und Produktinfos ergänzen.'}catch{document.querySelector('#helpPrompt').select();document.querySelector('#helpStatus').textContent=' Text markiert. Mit Strg/Cmd + C kopieren.'}};}
 document.querySelectorAll('[data-step]').forEach(b=>b.onclick=()=>{step=+b.dataset.step;render()});document.querySelectorAll('[data-key]').forEach(el=>el.oninput=()=>{const key=el.dataset.key;const previous=data[key];data[key]=el.value;if(['offerType','mode','format','avatar','production'].includes(key)){if(key==='offerType'&&previous!==el.value&&(centralProducts.has(previous)||centralProducts.has(el.value))){for(const k of ['offer','benefit','facts'])delete data[k];showProductPreview()}save();render()}else save()});document.querySelector('#back').onclick=()=>{step--;render()};if(step<6)document.querySelector('#next').onclick=()=>{const missing=missingRequired(step);if(missing){showMissing(missing);return}step++;render()};else{loadDirectorPrompt();document.querySelector('#edit').onclick=()=>{step=0;render()};document.querySelector('#copy').onclick=async()=>{try{await navigator.clipboard.writeText(document.querySelector('#result').value);document.querySelector('#status').textContent='Kopiert. Jetzt in ChatGPT einfügen.'}catch{document.querySelector('#result').select();document.querySelector('#status').textContent='Bitte den markierten Text mit Strg/Cmd + C kopieren.'}};document.querySelector('#newContentEnd').onclick=startNewContent;document.querySelector('#download').onclick=()=>{const u=URL.createObjectURL(new Blob([document.querySelector('#result').value],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=u;a.download='LIORA_Persoenlicher_Masterprompt.txt';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}}}
 // Wissensmodule, Formatregeln und Masterprompt werden ausschliesslich auf Supabase zusammengestellt.
+// Story-Layout gilt auch, wenn das Format erst im Chat festgelegt wird.
+const storySafeZone = `INSTAGRAM-STORY: SICHTBARER BILDBEREICH (nur für Story-Slides)
+- Plane jeden Slide in 9:16. Halte die obersten 15 % und die untersten 17 % der Bildhöhe für die Instagram-Oberfläche frei (bei 1080 × 1920 rund 290 px oben und 330 px unten). In diesen Randzonen darf nur unwichtiger Hintergrund liegen.
+- Platziere den vollständigen Textblock samt Zeilen, Emojis und Unterstreichungen innerhalb des sicheren Bereichs. Das gilt auch für Slide-Nummer, KI-Hinweis, Logo und CTA, falls vorgesehen. Eine Nummer oben rechts sitzt unterhalb der oberen Randzone, ein KI-Hinweis unten links oberhalb der unteren Randzone.
+- Plane die Abstände bereits bei der Bildkomposition. Falls der Text zu lang ist, nutze kürzere Zeilen oder stimme eine Kürzung ab. Verschiebe keinen Text in die Randzonen.
+- Übernimm diese Platzierung in jeden Story-Bildprompt und in die Anweisung für nachträglich gesetzten Text. Plane auch Platz für echte Instagram-Sticker innerhalb des sicheren Bereichs ein, sofern sie vorgesehen sind.`;
 const LIORA_PROMPT_FUNCTION='generate-director-prompt';
 let promptRequestId=0;
 async function loadDirectorPrompt(){
@@ -121,7 +127,7 @@ async function loadDirectorPrompt(){
   const result=await response.json().catch(()=>({}));
   if(!response.ok||!result.success||typeof result.prompt!=='string')throw Error(result.error||`Masterprompt konnte nicht erstellt werden (HTTP ${response.status}).`);
   if(requestId!==promptRequestId||document.getElementById('result')!==output)return;
-  output.value=result.prompt;
+  output.value=result.prompt.trimEnd()+'\n\n'+storySafeZone;
   status.textContent='Dein vollständiger Masterprompt ist bereit.';
   for(const id of ['copy','download']){const b=document.getElementById(id);if(b)b.disabled=false;}
  }catch(error){
