@@ -161,6 +161,11 @@ function storyPromptRules(){
  const labelOff=visibleField(['storyAiLabel'])&&data.storyAiLabel==='Ausblenden';
  return storySafeZone+'\n'+(labelOff?storyAiLabelOff:storyAiLabelOn);
 }
+const productBenefitRules = `KUNDENNUTZEN BEI PRODUKT- UND ANGEBOTSCONTENT
+- Wenn ein Produkt oder Angebot vorgestellt oder beworben wird, beantworte aus Kundensicht früh und ausdrücklich: «Was kann ich nach dem Kauf konkret tun, was wird für mich leichter oder was habe ich danach in der Hand?» Formuliere mindestens einen klaren Hauptnutzen in Alltagssprache.
+- Leite den Nutzen aus einer tatsächlichen Funktion oder Leistung ab. Zeige ihn mit einer kurzen Anwendungssituation: Was ist vorher mühsam, was macht die Kundin mit dem Produkt, und welches konkrete Ergebnis hat sie danach? Beispiel StoryApp: Aus «Ich weiss nicht, was mein Avatar heute posten soll» wird ein konkreter Ablauf mit Ideen für Bilder, Texte und Sticker.
+- Bei Storys und Carousels gehört der Hauptnutzen bereits in die ersten zwei Slides, bei einem Einzelbild auf den Slide selbst. Bei textfreien Bildern kommt er in den separat gelieferten Slide-Text. Greife den Nutzen in der Caption auf, sofern eine vorgesehen ist. Formuliere einen passenden CTA nur, wenn einer gewünscht ist.
+- Verwende belegte Angaben zum Angebot. Versprich keine garantierten Ergebnisse, Zeitersparnisse, Umsätze oder Reichweiten. Fehlt eine Information, die den Nutzen wesentlich verändert, stelle eine gezielte Rückfrage.`;
 const carouselCaptionRules = `INSTAGRAM-CAROUSEL: CAPTION, SEO UND CTA (nur für Carousels)
 - Sobald der konkrete Slide-Entwurf steht, liefere in derselben Antwort direkt darunter eine veröffentlichungsfertige Instagram-Caption in einer eigenen kopierbaren Textbox. Das gilt auch, wenn das Carousel-Format erst im Chat gewählt wird. Warte dafür weder auf eine separate Anfrage noch auf die Bilderstellung.
 - Schreibe in der gewählten Sprache und im Ton der Marke. Beginne mit einem konkreten Einstieg und ergänze den Inhalt der Slides mit Kontext, einem Beispiel oder einem klaren Nutzen.
@@ -243,7 +248,7 @@ async function loadDirectorPrompt(){
   const body=JSON.stringify({action:'generate',token,data:cleanData,profile});
   const prompt=await requestDirectorPrompt(body);
   if(requestId!==promptRequestId||document.getElementById('result')!==output)return;
-  output.value=[prompt,storyPromptRules(),carouselCaptionRules,kineticPromptRules(),lioraTypographyRules(),sceneContinuityRules()].filter(Boolean).join('\n\n');
+  output.value=[prompt,storyPromptRules(),carouselCaptionRules,productBenefitRules,kineticPromptRules(),lioraTypographyRules(),sceneContinuityRules()].filter(Boolean).join('\n\n');
   generateButton.hidden=true;
   status.textContent='Dein vollständiger Masterprompt ist bereit.';
   for(const id of ['copy','download']){const b=document.getElementById(id);if(b)b.disabled=false;}
