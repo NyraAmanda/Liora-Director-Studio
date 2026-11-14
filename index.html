@@ -238,11 +238,27 @@ function styleDescriptionRules(){
   ? 'STILBESCHREIBUNG ALS VISUELLE LEITLINIE\nRichte Farben, Typografie, Bildsprache und Layout an dieser Stilbeschreibung aus. Bei widersprüchlichen Stilvoreinstellungen hat sie Vorrang. Halte ausdrücklich gewählte Formate und Sicherheitszonen ein.\n'+description
   : 'STILBESCHREIBUNG ALS VISUELLE LEITLINIE\nBitte vor der Bildplanung einmal um die Stilbeschreibung, falls sie noch nicht im Chat vorliegt.';
 }
+function precisionImageRules(){
+ if(!wantsVisuals())return '';
+ return [
+  'PRECISION IMAGE DIRECTOR – NANO BANANA PRO',
+  'Nutze intern immer A–G. Halte einfache Porträts und Lifestyle-Aufnahmen kompakt. Arbeite bei mehreren Personen, besonderen Outfits, Interaktionen und Collagen präzise. Nutze bei komplexen Posen, Verdeckungen, räumlichen Konflikten und gezielten Bildbearbeitungen die vollständige Struktur.',
+  'A — ROLE & OBJECTIVE: Definiere Neugenerierung oder Bearbeitung und den genau sichtbaren Endzustand.',
+  'B — SUBJECT, STYLING & SCENE: Beschreibe Person, Outfit, Umgebung und Requisiten. Ordne jedes Referenzbild eindeutig als Identität, Outfit, Umgebung, Stil oder Basisbild zu. Bewahre Gesichtszüge, Augenfarbe, Haarstruktur, natürliche Hautmerkmale und Proportionen.',
+  'C — VISUAL & TECHNICAL DIRECTION: Definiere Kamera, Perspektive, Einstellungsweite, Licht, Schatten und Materialien. Prüfe Gewichtsverlagerung, Gelenke, Hände, Finger, Berührungspunkte, Blickrichtung und Mimik. Lege bei Verdeckungen ausdrücklich fest, was vor oder hinter welchem Objekt liegt.',
+  'D — TEXT & GRAPHICS: Verwende nur angeforderte Texte, Logos und Grafiken. Übernimm den sichtbaren Wortlaut exakt in der gewünschten Sprache. Beachte Kontrast, Typografie und Sicherheitsabstände.',
+  'E — COMPOSITION & FORMAT: Lege Format, Ausschnitt, Motivposition, Blickführung und Textfreiflächen fest. Bewahre bei Bearbeitungen Kamerawinkel und Ausschnitt, sofern keine Änderung verlangt ist.',
+  'F — CONSTRAINTS & PRESERVATION: Behandle das Basisbild für geschützte Bereiche als verbindlich. Ändere nur das Gewünschte. Priorisiere bei Konflikten Identität, räumliche Logik und ausdrücklich geschützte Bildbereiche.',
+  'G — OUTPUT QUALITY & VALIDATION: Formuliere einen konkreten, eigenständigen englischen Bildprompt. Ziel sind natürliche Haut, realistische Augen und Reflexionen, glaubwürdige Schatten und Materialien sowie plausible Anatomie. Vermeide leere Superlative, Wiederholungen und lange Negativlisten.',
+  'Wenn Nano Banana Pro oder eine Prompt-Ausgabe gewünscht ist, liefere den englischen Bildprompt kopierbar. Bei direkter Bildgenerierung verwende dieselbe Struktur intern mit dem verfügbaren Bildwerkzeug.',
+  'Bei einem lokal begrenzten Fehler beschreibe in einem kurzen englischen Reparaturprompt den Bildbereich, den sichtbaren Zielzustand und die unveränderten Elemente. Empfiehl eine vollständige Neugenerierung nur bei grundlegenden Fehlern in Komposition, Perspektive oder Körperhaltung. Begründe den Vorschlag und warte vor dem erneuten Bildaufruf auf die ausdrückliche Freigabe.'
+ ].join('\n');
+}
 function imagePreflightRules(){
  if(!wantsVisuals())return '';
  return [
   'BILDGENERIERUNG – VORABPRÜFUNG UND KORREKTUREN',
-  'Prüfe vor jedem Bildaufruf intern den konkreten Bildprompt gegen den bestätigten Plan und die Referenzen. Prüfe besonders Identität, Outfit, Anatomie und plausible Körperhaltung, Raum und Objekte, Format, exakten Bildtext, Textposition und Story-Sicherheitszonen sowie Collage und Stickerfläche, sofern gewählt. Bei einer Serie prüfe zusätzlich die Konsistenz zwischen den Slides. Korrigiere erkennbare Promptfehler vor dem Rendern. Frage nur bei einem wesentlichen offenen Punkt nach. Nutze für diese Vorabprüfung keine Testbilder.',
+  'Prüfe vor jedem Bildaufruf intern den konkreten Bildprompt gegen den bestätigten Plan und die Referenzen. Prüfe besonders Identität, Outfit, Anatomie und plausible Körperhaltung, Raum und Objekte, Format, exakten Bildtext, Textposition und Story-Sicherheitszonen sowie Collage und Stickerfläche, sofern gewählt. Bei einer Serie prüfe zusätzlich die Konsistenz zwischen den Slides. Korrigiere erkennbare Promptfehler vor dem Rendern. Bei einem wesentlichen ungelösten Konflikt erkläre ihn kurz, schlage eine konkrete Lösung vor und kläre ihn vor dem Rendern. Triff kleinere gestalterische Entscheidungen selbst. Nutze für die Vorabprüfung keine Testbilder.',
   'Prüfe das erzeugte Bild visuell, sofern du es sehen kannst. Bei einem wesentlichen Fehler benenne kurz den betroffenen Slide, die sichtbare Abweichung und die konkrete Korrektur. Frage, ob genau dieser Slide erneut generiert werden soll, und warte auf ein ausdrückliches Ja. Diese Freigabe gilt auch bei Serien in ChatGPT Work. Bereits gelungene Slides bleiben erhalten. Ein „Weiter“ ist nur die Freigabe für den nächsten geplanten Slide. Auch bei einer erneuten Abweichung gilt die Rückfrage erneut.'
  ].join('\n');
 }
@@ -319,7 +335,7 @@ async function loadDirectorPrompt(){
   const body=JSON.stringify({action:'generate',token,data:cleanData,profile});
   const prompt=await requestDirectorPrompt(body);
   if(requestId!==promptRequestId||document.getElementById('result')!==output)return;
-  output.value=[prompt,storyPromptRules(),carouselCaptionRules,productBenefitRules,kineticPromptRules(),lioraTypographyRules(),sceneContinuityRules(),collagePromptRules(),styleDescriptionRules(),imagePreflightRules()].filter(Boolean).join('\n\n');
+  output.value=[prompt,storyPromptRules(),carouselCaptionRules,productBenefitRules,kineticPromptRules(),lioraTypographyRules(),sceneContinuityRules(),collagePromptRules(),styleDescriptionRules(),precisionImageRules(),imagePreflightRules()].filter(Boolean).join('\n\n');
   generateButton.hidden=true;
   status.textContent='Dein vollständiger Masterprompt ist bereit.';
   for(const id of ['copy','download']){const b=document.getElementById(id);if(b)b.disabled=false;}
