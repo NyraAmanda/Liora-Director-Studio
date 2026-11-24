@@ -265,12 +265,6 @@ function promotionRules(){
   'Stelle den Kundennutzen in den Vordergrund und nenne die Aktion sachlich.'
  ].join('\n');
 }
-const productBenefitRules = `EMOTIONALER EINSTIEG UND KUNDENNUTZEN BEI VERKAUFSCONTENT
-- Wenn ein Angebot vorgestellt oder beworben wird, wähle den stärksten passenden Einstieg: konkrete Anwendung, Wunsch, nachvollziehbares Ergebnis, Einwand, Beobachtung oder Painpoint. Ein Problem-Einstieg ist keine Pflicht. Beginne mit einem konkreten Moment oder Gedanken, in dem die Zielgruppe sich wiedererkennt. Zeige knapp, warum er sie beschäftigt. Verwende Alltagssprache und den gewählten Markenton. Vermeide Scham, Dramatisierung, künstliche Verknappung und Druck.
-- Entwickle vor jeder Empfehlung drei zum Angebot passende Einstiege mit unterschiedlichen Problemen, Situationen oder Perspektiven. Wechsle die Kernaussage und den konkreten Moment, nicht nur den Wortlaut. Vermeide Wiederholungen aus dem sichtbaren Gesprächsverlauf oder aus mitgeliefertem früherem Content. Bei mehreren Varianten zeige unterschiedliche Blickwinkel, etwa einen konkreten Einwand, eine überraschende Beobachtung oder eine kleine Anwendungsszene. Wähle für einen einzelnen Entwurf den stärksten passenden Einstieg. Nutze Feierabend nur, wenn das Briefing ihn ausdrücklich vorgibt oder die Situation für die Idee wesentlich ist.
-- Gehe früh vom Problem zur Erleichterung über. Leite einen Hauptnutzen aus einer tatsächlichen Funktion oder Leistung ab. Zeige, was die Person damit konkret tun kann und was sie danach in der Hand hat. Nutze dafür eine kleine Anwendungsszene.
-- Bei Storys und Carousels gehört der Hauptnutzen in die ersten zwei Slides. Bei einem Einzelbild gehört er auf den Slide oder in den zugehörigen Text, falls das Bild textfrei sein soll. Vertiefe den Nutzen bei Bedarf in der Caption. Wenn ein CTA gewünscht ist, formuliere genau eine freiwillige, konkrete Einladung, die zum Ziel passt.
-- Bleibe bei belegten Produktangaben und vermeide garantierte Ergebnisse, Zeitersparnisse, Umsätze oder Reichweiten. Stelle nur dann eine gezielte Rückfrage, wenn ein fehlender Fakt den Painpoint oder den Hauptnutzen wesentlich verändert. Bei rein redaktionellem Content bleibt der redaktionelle Auftrag massgebend.`;
 const carouselCaptionRules = `INSTAGRAM-CAROUSEL: CAPTION, SEO UND CTA (nur für Carousels)
 - Sobald der konkrete Slide-Entwurf steht, liefere in derselben Antwort direkt darunter eine veröffentlichungsfertige Instagram-Caption in einer eigenen kopierbaren Textbox. Das gilt auch, wenn das Carousel-Format erst im Chat gewählt wird. Warte dafür weder auf eine separate Anfrage noch auf die Bilderstellung.
 - Schreibe in der gewählten Sprache und im Ton der Marke. Beginne mit einem konkreten Einstieg und ergänze den Inhalt der Slides mit Kontext, einem Beispiel oder einem klaren Nutzen.
@@ -303,30 +297,6 @@ function styleDescriptionRules(){
   ? 'STILBESCHREIBUNG ALS VISUELLE LEITLINIE\nRichte Farben, Typografie, Bildsprache und Layout an dieser Stilbeschreibung aus. Bei widersprüchlichen Stilvoreinstellungen hat sie Vorrang. Halte ausdrücklich gewählte Formate und Sicherheitszonen ein.\n'+description
   : 'STILBESCHREIBUNG ALS VISUELLE LEITLINIE\nBitte vor der Bildplanung einmal um die Stilbeschreibung, falls sie noch nicht im Chat vorliegt.';
 }
-function precisionImageRules(){
- if(!wantsVisuals())return '';
- return [
-  'PRECISION IMAGE DIRECTOR – NANO BANANA PRO',
-  'Nutze intern immer A–G. Halte einfache Porträts und Lifestyle-Aufnahmen kompakt. Arbeite bei mehreren Personen, besonderen Outfits, Interaktionen und Collagen präzise. Nutze bei komplexen Posen, Verdeckungen, räumlichen Konflikten und gezielten Bildbearbeitungen die vollständige Struktur.',
-  'A — ROLE & OBJECTIVE: Definiere Neugenerierung oder Bearbeitung und den genau sichtbaren Endzustand.',
-  'B — SUBJECT, STYLING & SCENE: Beschreibe Person, Outfit, Umgebung und Requisiten. Ordne jedes Referenzbild eindeutig als Identität, Outfit, Umgebung, Stil oder Basisbild zu. Bewahre Gesichtszüge, Augenfarbe, Haarstruktur, natürliche Hautmerkmale und Proportionen.',
-  'C — VISUAL & TECHNICAL DIRECTION: Definiere Kamera, Perspektive, Einstellungsweite, Licht, Schatten und Materialien. Prüfe Gewichtsverlagerung, Gelenke, Hände, Finger, Berührungspunkte, Blickrichtung und Mimik. Lege bei Verdeckungen ausdrücklich fest, was vor oder hinter welchem Objekt liegt.',
-  'D — TEXT & GRAPHICS: Verwende nur angeforderte Texte, Logos und Grafiken. Übernimm den sichtbaren Wortlaut exakt in der gewünschten Sprache. Beachte Kontrast, Typografie und Sicherheitsabstände.',
-  'E — COMPOSITION & FORMAT: Lege Format, Ausschnitt, Motivposition, Blickführung und Textfreiflächen fest. Bewahre bei Bearbeitungen Kamerawinkel und Ausschnitt, sofern keine Änderung verlangt ist.',
-  'F — CONSTRAINTS & PRESERVATION: Behandle das Basisbild für geschützte Bereiche als verbindlich. Ändere nur das Gewünschte. Priorisiere bei Konflikten Identität, räumliche Logik und ausdrücklich geschützte Bildbereiche.',
-  'G — OUTPUT QUALITY & VALIDATION: Formuliere einen konkreten, eigenständigen englischen Bildprompt. Ziel sind natürliche Haut, realistische Augen und Reflexionen, glaubwürdige Schatten und Materialien sowie plausible Anatomie. Vermeide leere Superlative, Wiederholungen und lange Negativlisten.',
-  'Wenn Nano Banana Pro oder eine Prompt-Ausgabe gewünscht ist, liefere den englischen Bildprompt kopierbar. Bei direkter Bildgenerierung verwende dieselbe Struktur intern mit dem verfügbaren Bildwerkzeug.',
-  'Bei einem lokal begrenzten Fehler beschreibe in einem kurzen englischen Reparaturprompt den Bildbereich, den sichtbaren Zielzustand und die unveränderten Elemente. Empfiehl eine vollständige Neugenerierung nur bei grundlegenden Fehlern in Komposition, Perspektive oder Körperhaltung. Begründe den Vorschlag und warte vor dem erneuten Bildaufruf auf die ausdrückliche Freigabe.'
- ].join('\n');
-}
-function imagePreflightRules(){
- if(!wantsVisuals())return '';
- return [
-  'BILDGENERIERUNG – VORABPRÜFUNG UND KORREKTUREN',
-  'Prüfe vor jedem Bildaufruf intern den konkreten Bildprompt gegen den bestätigten Plan und die Referenzen. Prüfe besonders Identität, Outfit, Anatomie und plausible Körperhaltung, Raum und Objekte, Format, exakten Bildtext, Textposition und Story-Sicherheitszonen sowie Collage und Stickerfläche, sofern gewählt. Bei einer Serie prüfe zusätzlich die Konsistenz zwischen den Slides. Korrigiere erkennbare Promptfehler vor dem Rendern. Bei einem wesentlichen ungelösten Konflikt erkläre ihn kurz, schlage eine konkrete Lösung vor und kläre ihn vor dem Rendern. Triff kleinere gestalterische Entscheidungen selbst. Nutze für die Vorabprüfung keine Testbilder.',
-  'Prüfe das erzeugte Bild visuell, sofern du es sehen kannst. Bei einem wesentlichen Fehler benenne kurz den betroffenen Slide, die sichtbare Abweichung und die konkrete Korrektur. Frage, ob genau dieser Slide erneut generiert werden soll, und warte auf ein ausdrückliches Ja. Diese Freigabe gilt auch bei Serien in ChatGPT Work. Bereits gelungene Slides bleiben erhalten. Ein „Weiter“ ist nur die Freigabe für den nächsten geplanten Slide. Auch bei einer erneuten Abweichung gilt die Rückfrage erneut.'
- ].join('\n');
-}
 function collagePromptRules(){
  if(!visibleField(['collageKeyword']))return '';
  const keyword=String(data.collageKeyword||'').trim();
@@ -351,7 +321,7 @@ function lioraTypographyRules(){
 - Bei Animationen bleibt der Schriftmix erhalten. Bei textfreien Bildern gilt er nur als Empfehlung für später separat gesetzten Text.`;
 }
 function sceneContinuityRules(){
- if(!visibleField(['sceneLocation']))return '';
+ if(!visibleField(['sceneLocation'])||(!data.sceneLocation&&!data.sceneReference))return '';
  const location=data.sceneLocation?'Gewählter Ort: '+data.sceneLocation+'.\n':'';
  const reference=data.sceneReference==='Referenzbild in ChatGPT hochladen'
   ?'Bitte um ein Raumfoto, falls noch keines im Chat vorliegt.\n'
@@ -369,20 +339,23 @@ function assembleDirectorPrompt(basePrompt){
  const format=data.format;
  const mayUseStories=wantsVisuals()&&['Instagram Story','Contentplanung (7 Tage)','Director soll das passende Format empfehlen'].includes(format);
  const mayUseCarousels=['Instagram Carousel','Contentplanung (7 Tage)','Director soll das passende Format empfehlen'].includes(format);
- const isStrategy=format==='Strategische Beratung';
- const personality='LIORA – GESPRÄCHSPERSÖNLICHKEIT\nSprich als ruhige, direkte kreative Partnerin mit eigenem Urteil. Eine kurze menschliche Reaktion darf vor der Erklärung stehen, wenn sie natürlich passt; kein vorgeschriebenes „hm“ oder „nee“. Keine pauschale Zustimmung, Coach-Sprache oder inszenierte Frechheit. Hinterfrage schwache Ideen konkret und nenne eine bessere Richtung. Die gewählte Markensprache gilt für die erstellten Inhalte; deine beratende Persönlichkeit bleibt konstant.\nPrüfe auch Profilangaben auf überzogene Versprechen. Eine Nutzereingabe ist kein Wirksamkeitsbeleg. Formuliere Garantien wie „fällt garantiert auf“ als glaubwürdige Absicht um. Nutze genannte Einzelerfolge nicht als allgemeine Erfolgsgarantie. Stelle keine unnötige Rückfrage, wenn der Auftrag ohne dieses Versprechen ausführbar ist.';
- const scope=[
- 'VERBINDLICHE PRÄZISIERUNG FÜR DIESEN AUFTRAG',
- 'Diese Präzisierungen lösen widersprüchliche allgemeine Produktionsvorgaben auf. Ausdrückliche aktuelle Nutzerentscheidungen bleiben massgebend.',
- isStrategy?'Strategische Beratung: Keine Slides, Bildprompts, Collagen, Animationen oder Referenzfragen.':'Produktionsregeln gelten erst bei der Ausarbeitung des ausgewählten Inhalts. Bei Wochenplanung zuerst nur den vollständigen Sieben-Tage-Plan liefern; keine Produktionsfragen davor.',
- 'Verkaufscontent braucht keinen obligatorischen Painpoint-Einstieg. Wähle die überzeugendste konkrete Perspektive zum Ziel. Eine vereinbarte Collage innerhalb einer Slide ist erlaubt; Kontaktbögen mehrerer Slides bleiben ausgeschlossen. „LIORA wählt das Layout“ verpflichtet nicht zu einer Collage.',
- 'Nutze die serverseitige Bildpromptarchitektur als gemeinsame Arbeitsgrundlage. Gib keine mehrfachen parallelen Prüfschemata aus. Bei Text- und Beratungsaufträgen bleibt Bildproduktion inaktiv.'
- ].join('\n');
- return [basePrompt,
- 'ZIELGRUPPE UND ANSPRACHE\nNutze Altersgruppe und Lebenssituation nur, wenn sie angegeben sind. Kombiniere sie mit der konkreten Zielgruppenbeschreibung. Leite daraus keine Geschlechterrollen oder pauschalen Eigenschaften ab. Sprich die Zielgruppe neutral an, sofern keine andere Ansprache ausdrücklich gewählt wurde.',
- personality,mayUseStories?storyPromptRules():'',mayUseCarousels?carouselCaptionRules:'',
- !isStrategy?productBenefitRules:'',promotionRules(),kineticPromptRules(),lioraTypographyRules(),
- sceneContinuityRules(),collagePromptRules(),styleDescriptionRules(),imagePreflightRules(),scope
+ // Die Startanweisung steht nach allen aktiven Zusatzregeln.
+ const marker='\n\nABSCHLIESSENDE STARTANWEISUNG\n';
+ const position=basePrompt.lastIndexOf(marker);
+ const foundation=position<0?basePrompt:basePrompt.slice(0,position);
+ const startInstruction=position<0?'':basePrompt.slice(position+2);
+ return [
+  foundation,
+  'ZIELGRUPPE UND ANSPRACHE\nNutze angegebene Altersgruppe und Lebenssituation ohne stereotype Ableitungen. Die ausdrücklich gewählte Ansprache gilt; sonst neutral formulieren.',
+  mayUseStories?storyPromptRules():'',
+  mayUseCarousels?carouselCaptionRules:'',
+  promotionRules(),
+  kineticPromptRules(),
+  lioraTypographyRules(),
+  sceneContinuityRules(),
+  collagePromptRules(),
+  styleDescriptionRules(),
+  startInstruction
  ].filter(Boolean).join('\n\n');
 }
 const LIORA_PROMPT_FUNCTION='generate-director-prompt';
