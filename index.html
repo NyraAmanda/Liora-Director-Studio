@@ -243,7 +243,7 @@ const storySafeZone = `INSTAGRAM-STORY: SICHTBARER BILDBEREICH (nur für Story-S
 - Platziere den vollständigen Textblock samt Zeilen, Emojis und Unterstreichungen innerhalb des sicheren Bereichs. Das gilt auch für Logo, CTA und Slide-Nummer, falls vorgesehen. Eine Nummer oben rechts sitzt unterhalb der oberen Randzone.
 - Plane die Abstände bereits bei der Bildkomposition. Falls der Text zu lang ist, nutze kürzere Zeilen oder stimme eine Kürzung ab. Verschiebe keinen Text in die Randzonen.
 - Übernimm diese Platzierung in jeden Story-Bildprompt und in die Anweisung für nachträglich gesetzten Text. Plane auch Platz für echte Instagram-Sticker innerhalb des sicheren Bereichs ein, sofern sie vorgesehen sind.
-- Reserviere auf dem letzten Story-Slide (bei nur einem Slide auf diesem) eine freie, ruhige Fläche für den echten Instagram-Link-Sticker. Platziere sie mittig im unteren Teil des sicheren Bereichs, vollständig oberhalb der unteren 17 % und mit Abstand zu Text, Motiv und KI-Hinweis. Lass die Fläche im Bild frei von Text, Symbolen und Platzhaltergrafiken. Nenne in der Veröffentlichungsübersicht die genaue Position zum manuellen Einfügen des Link-Stickers in Instagram.`;
+- Reserviere nur dann eine freie, ruhige Fläche für einen echten Instagram-Link-Sticker, wenn für diesen Story-Inhalt ein Link als CTA vereinbart wurde. Bei Antworten, Nachrichten, Interaktion oder ausdrücklich keinem CTA entfällt diese Pflicht. Die Fläche liegt auf dem letzten Story-Slide (bei nur einem Slide auf diesem). Platziere sie mittig im unteren Teil des sicheren Bereichs, vollständig oberhalb der unteren 17 % und mit Abstand zu Text, Motiv und KI-Hinweis. Lass die Fläche im Bild frei von Text, Symbolen und Platzhaltergrafiken. Nenne in der Veröffentlichungsübersicht die genaue Position zum manuellen Einfügen des Link-Stickers in Instagram.`;
 const storyAiLabelOn = `- Jeder KI-generierte Story-Slide trägt gut lesbar den exakten Hinweis „KI generiert“, klein unten links innerhalb des sicheren Bereichs, vollständig oberhalb der unteren Randzone und mit ausreichendem Kontrast. Bei Bildern ohne Storytext bleibt der Hinweis als Kennzeichnung erhalten. Wenn ein ausdrücklich vollständig textfreies Bild gewünscht ist, plane die Stelle frei und liefere den Hinweis mit Platzierung zum nachträglichen Einfügen. Wiederhole die Vorgabe für jeden einzelnen Slide und prüfe sie in der Abschlussübersicht.`;
 const storyAiLabelOff = 'Für diesen Auftrag ist der sichtbare Hinweis „KI generiert“ auf den Story-Slides ausgeschaltet. Diese Wahl hat Vorrang vor anderen Vorgaben zur sichtbaren Kennzeichnung im Bild. Setze dafür weder Text noch Platzhalter in die Slides.';
 function storyPromptRules(){
@@ -266,7 +266,7 @@ function promotionRules(){
  ].join('\n');
 }
 const productBenefitRules = `EMOTIONALER EINSTIEG UND KUNDENNUTZEN BEI VERKAUFSCONTENT
-- Wenn ein Angebot vorgestellt oder beworben wird, wähle einen konkreten, aus dem Briefing ableitbaren Painpoint. Beginne mit einem Moment, in dem die Zielgruppe sich wiedererkennt. Zeige knapp, warum er sie beschäftigt. Verwende Alltagssprache und den gewählten Markenton. Vermeide Scham, Dramatisierung, künstliche Verknappung und Druck.
+- Wenn ein Angebot vorgestellt oder beworben wird, wähle den stärksten passenden Einstieg: konkrete Anwendung, Wunsch, nachvollziehbares Ergebnis, Einwand, Beobachtung oder Painpoint. Ein Problem-Einstieg ist keine Pflicht. Beginne mit einem konkreten Moment oder Gedanken, in dem die Zielgruppe sich wiedererkennt. Zeige knapp, warum er sie beschäftigt. Verwende Alltagssprache und den gewählten Markenton. Vermeide Scham, Dramatisierung, künstliche Verknappung und Druck.
 - Entwickle vor jeder Empfehlung drei zum Angebot passende Einstiege mit unterschiedlichen Problemen, Situationen oder Perspektiven. Wechsle die Kernaussage und den konkreten Moment, nicht nur den Wortlaut. Vermeide Wiederholungen aus dem sichtbaren Gesprächsverlauf oder aus mitgeliefertem früherem Content. Bei mehreren Varianten zeige unterschiedliche Blickwinkel, etwa einen konkreten Einwand, eine überraschende Beobachtung oder eine kleine Anwendungsszene. Wähle für einen einzelnen Entwurf den stärksten passenden Einstieg. Nutze Feierabend nur, wenn das Briefing ihn ausdrücklich vorgibt oder die Situation für die Idee wesentlich ist.
 - Gehe früh vom Problem zur Erleichterung über. Leite einen Hauptnutzen aus einer tatsächlichen Funktion oder Leistung ab. Zeige, was die Person damit konkret tun kann und was sie danach in der Hand hat. Nutze dafür eine kleine Anwendungsszene.
 - Bei Storys und Carousels gehört der Hauptnutzen in die ersten zwei Slides. Bei einem Einzelbild gehört er auf den Slide oder in den zugehörigen Text, falls das Bild textfrei sein soll. Vertiefe den Nutzen bei Bedarf in der Caption. Wenn ein CTA gewünscht ist, formuliere genau eine freiwillige, konkrete Einladung, die zum Ziel passt.
@@ -285,7 +285,8 @@ const kineticTypographyRules = `MODUL: AUTOMATISCHE KINETIC TYPOGRAPHY
 - Verwende nur tatsächlich verfügbare Exportwerkzeuge. Falls MP4 möglich ist, aber kein ZIP, verlinke die MP4s einzeln. Falls kein MP4-Export möglich ist, liefere die HTML-Komposition und sage klar, dass ein Videoexport noch nötig ist. Wenn ausdrücklich nur eine Vorschau gewünscht ist, genügt diese.`;
 function kineticPromptRules(){
  const enabled=visibleField(['kineticTypography'])&&data.kineticTypography==='Text animieren';
- const selection=enabled?'Für diesen Auftrag ist „Text animieren“ gewählt.\n':'';
+ if(!enabled)return '';
+ const selection='Für diesen Auftrag ist „Text animieren“ gewählt.\n';
  const slides=canChooseAnimatedSlides()?selectedAnimationSlides():[];
  const series=data.format==='Instagram Story'?'Story':'Carousel';
  const slideRule=slides.length?'Animierte '+series+'-Slides: '+slides.join(', ')+'. Plane mindestens bis zum höchsten gewählten Slide.\n':'';
@@ -333,7 +334,8 @@ function collagePromptRules(){
  return [
   'COLLAGE-STIL',
   collageLayouts[data.collageStyle][1]+'.',
-  'Verwende die Collage standardmässig auf einem passenden Slide. Alle Bildausschnitte zusammen ergeben einen einzigen Slide. Halte die bestätigte Slide-Anzahl ein.',
+  data.collageStyle==='LIORA wählt das Layout'?'Eine Collage ist optional. Wähle sie nur, wenn mehrere Ansichten die Aussage klarer machen. Ein einzelnes starkes Motiv ist gleichwertig.':'Verwende das ausdrücklich gewählte Collage-Layout auf einem passenden Slide.',
+  'Eine gewählte Collage besteht aus mehreren Bildausschnitten innerhalb EINER Slide-Datei. Sie ist kein Kontaktbogen mehrerer Slides. Halte die bestätigte Slide-Anzahl ein.',
   'Kombiniere unterschiedliche Perspektiven und Details. Halte Farben, Licht und den bestätigten Markenstil stimmig. Bei Produktcontent zeige das Produkt klar und nutze Details, um einen konkreten, belegten Kundennutzen sichtbar zu machen.',
   keyword?'Verwende dieses Schlagwort wortgetreu als Textinhalt: '+JSON.stringify(keyword):'Schlage im Contentplan ein Schlagwort oder eine Phrase mit bis zu drei Wörtern in der gewählten Sprache vor.',
   separateText?'Liefere das Schlagwort separat zum Kopieren mit einem Platzierungsvorschlag. Halte das Bild frei von eingebettetem Schlagwort.':'Setze das Schlagwort gut lesbar mit ausreichend Kontrast. Nutze die gewählte Markenschrift oder eine edle Serifenschrift mit einem einzelnen Schreibschrift-Akzent. Bei reinen Bildprompts gib das exakte Schlagwort zusätzlich separat zum Kopieren aus.',
@@ -361,6 +363,27 @@ function sceneContinuityRules(){
  `Verwende die bestätigte Ansicht für alle weiteren Slides am selben Ort. Leite selbst eine kurze Raumkarte mit drei bis fünf sichtbaren Ankern ab, etwa Tür, Fenster, Möbel und wichtige Requisiten. Beschreibe Positionen relativ zueinander, beispielsweise «Kissen an der Armlehne zur Tür». Verwende Bildlinks und Bildrechts nur zur Beschreibung einer bestimmten Kameraansicht.
 Nutze bei jeder Bilderstellung die bestätigte Referenz erneut, soweit das Bildwerkzeug sie als Eingabe unterstützt. Bei reinen Bildprompts nenne die Referenz und die relevanten Anker ausdrücklich in jedem passenden Prompt. Halte die räumliche Anordnung fest. Ein Objekt ausserhalb des Ausschnitts bleibt ausserhalb des Bildes.
 Führe den zuletzt bestätigten Zustand der Handlung fort. Wird eine Tasse angehoben, bleibt sie in der Hand, bis sie abgestellt wird. Nutze bei nicht sichtbaren Raumseiten einen bekannten Ausschnitt oder bestätige einmal eine zweite Ansicht, bevor du diese Seite wiederverwendest. Vergleiche jeden Slide vor der Ausgabe mit Raumkarte und Handlungsstand und korrigiere erkennbare Abweichungen, soweit möglich.`;
+}
+// Nur auftragsrelevante Zusatzregeln; serverseitiges Wissen bleibt erhalten.
+function assembleDirectorPrompt(basePrompt){
+ const format=data.format;
+ const mayUseStories=wantsVisuals()&&['Instagram Story','Contentplanung (7 Tage)','Director soll das passende Format empfehlen'].includes(format);
+ const mayUseCarousels=['Instagram Carousel','Contentplanung (7 Tage)','Director soll das passende Format empfehlen'].includes(format);
+ const isStrategy=format==='Strategische Beratung';
+ const personality='LIORA – GESPRÄCHSPERSÖNLICHKEIT\nSprich als ruhige, direkte kreative Partnerin mit eigenem Urteil. Eine kurze menschliche Reaktion darf vor der Erklärung stehen, wenn sie natürlich passt; kein vorgeschriebenes „hm“ oder „nee“. Keine pauschale Zustimmung, Coach-Sprache oder inszenierte Frechheit. Hinterfrage schwache Ideen konkret und nenne eine bessere Richtung. Die gewählte Markensprache gilt für die erstellten Inhalte; deine beratende Persönlichkeit bleibt konstant.\nPrüfe auch Profilangaben auf überzogene Versprechen. Eine Nutzereingabe ist kein Wirksamkeitsbeleg. Formuliere Garantien wie „fällt garantiert auf“ als glaubwürdige Absicht um. Nutze genannte Einzelerfolge nicht als allgemeine Erfolgsgarantie. Stelle keine unnötige Rückfrage, wenn der Auftrag ohne dieses Versprechen ausführbar ist.';
+ const scope=[
+ 'VERBINDLICHE PRÄZISIERUNG FÜR DIESEN AUFTRAG',
+ 'Diese Präzisierungen lösen widersprüchliche allgemeine Produktionsvorgaben auf. Ausdrückliche aktuelle Nutzerentscheidungen bleiben massgebend.',
+ isStrategy?'Strategische Beratung: Keine Slides, Bildprompts, Collagen, Animationen oder Referenzfragen.':'Produktionsregeln gelten erst bei der Ausarbeitung des ausgewählten Inhalts. Bei Wochenplanung zuerst nur den vollständigen Sieben-Tage-Plan liefern; keine Produktionsfragen davor.',
+ 'Verkaufscontent braucht keinen obligatorischen Painpoint-Einstieg. Wähle die überzeugendste konkrete Perspektive zum Ziel. Eine vereinbarte Collage innerhalb einer Slide ist erlaubt; Kontaktbögen mehrerer Slides bleiben ausgeschlossen. „LIORA wählt das Layout“ verpflichtet nicht zu einer Collage.',
+ 'Nutze die serverseitige Bildpromptarchitektur als gemeinsame Arbeitsgrundlage. Gib keine mehrfachen parallelen Prüfschemata aus. Bei Text- und Beratungsaufträgen bleibt Bildproduktion inaktiv.'
+ ].join('\n');
+ return [basePrompt,
+ 'ZIELGRUPPE UND ANSPRACHE\nNutze Altersgruppe und Lebenssituation nur, wenn sie angegeben sind. Kombiniere sie mit der konkreten Zielgruppenbeschreibung. Leite daraus keine Geschlechterrollen oder pauschalen Eigenschaften ab. Sprich die Zielgruppe neutral an, sofern keine andere Ansprache ausdrücklich gewählt wurde.',
+ personality,mayUseStories?storyPromptRules():'',mayUseCarousels?carouselCaptionRules:'',
+ !isStrategy?productBenefitRules:'',promotionRules(),kineticPromptRules(),lioraTypographyRules(),
+ sceneContinuityRules(),collagePromptRules(),styleDescriptionRules(),imagePreflightRules(),scope
+ ].filter(Boolean).join('\n\n');
 }
 const LIORA_PROMPT_FUNCTION='generate-director-prompt';
 let promptRequestId=0;
@@ -400,7 +423,7 @@ async function loadDirectorPrompt(){
   const body=JSON.stringify({action:'generate',token,data:cleanData,profile});
   const prompt=await requestDirectorPrompt(body);
   if(requestId!==promptRequestId||document.getElementById('result')!==output)return;
-  output.value=[prompt,'ZIELGRUPPE UND ANSPRACHE\nNutze Altersgruppe und Lebenssituation nur, wenn sie angegeben sind. Kombiniere sie mit der konkreten Zielgruppenbeschreibung. Leite daraus keine Geschlechterrollen oder pauschalen Eigenschaften ab. Sprich die Zielgruppe neutral an, sofern keine andere Ansprache ausdrücklich gewählt wurde.',storyPromptRules(),carouselCaptionRules,productBenefitRules,promotionRules(),kineticPromptRules(),lioraTypographyRules(),sceneContinuityRules(),collagePromptRules(),styleDescriptionRules(),precisionImageRules(),imagePreflightRules()].filter(Boolean).join('\n\n');
+  output.value=assembleDirectorPrompt(prompt);
   generateButton.hidden=true;
   status.textContent='Dein vollständiger Masterprompt ist bereit.';
   for(const id of ['copy','download']){const b=document.getElementById(id);if(b)b.disabled=false;}
